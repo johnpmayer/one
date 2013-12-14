@@ -24,7 +24,7 @@ joySection l r t =
         sides = map (mapTriangle (\p -> { pos = p, norm = out })) [(b,c,e),(c,e,f)]
     in bind <| bottom :: top :: sides
 
-joyVert : Shader { pos : V3, norm : V3 } { model : M4x4, view : M4x4 } { vModel : M4x4, vNorm : V3 }
+joyVert : Shader { pos : V3, norm : V3 } { model : M4x4, view : M4x4 } { vNorm : V3 }
 joyVert = [glShader|
 
 attribute vec3 pos;
@@ -33,29 +33,25 @@ attribute vec3 norm;
 uniform mat4 model;
 uniform mat4 view;
 
-varying mat4 vModel;
 varying vec3 vNorm;
 
 void main() {
     gl_Position = view * model * vec4(pos, 1.0);
-    vModel = model;
-    vNorm = norm;
+    vNorm = (model * vec4(norm, 0.0)).xyz;
 }
 
 |]
 
-joyFrag : Shader {} {} { vModel : M4x4, vNorm : V3 }
+joyFrag : Shader {} {} { vNorm : V3 }
 joyFrag = [glShader|
 
 precision mediump float;
 
-varying mat4 vModel;
 varying vec3 vNorm;
 
 void main() {
-    vec4 norm = vModel * vec4(vNorm, 1.0);
-    float diffuse = dot(vec3(0,1,0), norm.xyz) * 0.6 + 0.4;
-    gl_FragColor = vec4(vec3(0.1,0.1,0.5) * diffuse, 1);
+    float diffuse = dot(vec3(0.0,1.0,0.0), vNorm.xyz) * 0.6 + 0.4;
+    gl_FragColor = vec4(vec3(0.5,0,0) * diffuse, 1.0);
 }
 
 |]
@@ -63,8 +59,8 @@ void main() {
 joyProg = link joyVert joyFrag
 
 n =16 
-l = 0.7
-r = 0.06
+l = 0.5
+r = 0.02
 dt = 2 * pi / n
 
 joyBuf : Buffer { pos : V3, norm : V3 }

@@ -70,7 +70,7 @@ scene = (::) <~ (skyModel <~ sView) ~ (joyModels <~ controls ~ sView ~ plane)
 
 overlay : Signal [Form]
 overlay = combine <|
-    [ move <~ (joyCenter <~ dimensions) ~ constant (filled green <| circle 7)
+    [ move <~ (joyCenter <~ dimensions) ~ constant (filled red <| circle 7)
     ] 
 
 main = flow outward <~ combine 
