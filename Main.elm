@@ -1,9 +1,10 @@
 
 import open Graphics.WebGL
---import Maybe
 import open MJS
 import open Touch
 import open Window
+
+import open Joystick
 
 relPos : (Int, Int) -> { a | x : Int, y : Int } -> (Float, Float)
 relPos (w, h) {x, y} = (toFloat x - (toFloat w / 2), (toFloat h / 2) - toFloat y)
@@ -27,7 +28,7 @@ lift2Maybe : (a -> b -> c) -> Maybe a -> Maybe b -> Maybe c
 lift2Maybe f x y = (f `mapMaybe` x) `appMaybe` y
 
 joyCenter : (Int, Int) -> (Float, Float)
-joyCenter (w,h) = (0, -(toFloat h / 3))
+joyCenter (w,h) = (0, -(toFloat h / 4))
 
 joystick : Signal (Maybe (Float, Float))
 joystick = (lift2Maybe relPos <~ (Just <~ dimensions) ~ (safeHead <~ touches))
@@ -37,38 +38,30 @@ realJoy = (\mjs jc -> case mjs of
                 Nothing -> jc
                 Just js -> js) <~ joystick ~ (joyCenter <~ dimensions)
 
-overlay : Signal [Form]
-overlay = combine <|
-    [ constant <| filled red <| circle 5
-    , move <~ realJoy ~ constant (filled green <| circle 20)
-    ] 
+mapPair : (a -> b) -> (a, a) -> (b, b)
+mapPair f (x,y) = (f x, f y)
 
-id_vert = [glShader|
-attribute vec3 pos;
-void main() {
-    gl_Position = vec4(pos,1.0);
-}
-|]
+zipWithPair : (a -> b -> c) -> (a,a) -> (b,b) -> (c,c)
+zipWithPair f (x,y) (z,w) = (f x z, f y w)
 
-black_frag = [glShader|
-void main() {
-    gl_FragColor = vec4(0.0,0.0,0.0,1.0);
-}
-|]
+fDimensions : Signal (Float,Float)
+fDimensions = mapPair toFloat <~ dimensions
 
-type Pos = { pos : V3 }
+controls = (zipWithPair (/)) <~ realJoy ~ fDimensions
 
-box : Buffer Pos
-box = bind <| map (mapTriangle Pos) [(v3 1 -1 0, v3 1 1 0, v3 -1 -1 0)]
-
-black_prog = link id_vert black_frag
+aspect : Signal Float
+aspect = (/) <~ (fst <~ fDimensions) ~ (snd <~ fDimensions)
 
 scene : Signal [Model]
-scene = constant <| [encapsulate black_prog box {}]
+scene = joyModels <~ controls ~ aspect
 
-main = flow inward <~ combine 
-    [ asText <~ (lift2Maybe relPos <~ (Just <~ dimensions) ~ (safeHead <~ touches))
+overlay : Signal [Form]
+overlay = combine <|
+    [ move <~ (joyCenter <~ dimensions) ~ constant (filled green <| circle 7)
+    ] 
+
+main = flow outward <~ combine 
+    [ webgl <~ dimensions ~ scene
     , collage <~ (fst <~ dimensions) ~ (snd <~ dimensions) ~ overlay
-    , webgl <~ dimensions ~ scene
     ]
 
