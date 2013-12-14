@@ -5,6 +5,8 @@ import open MJS
 import open Graphics.WebGL
 
 import open Scene
+import Simulation (Plane, planeView, joyBase)
+import open Utils
 
 joySection : Float -> Float -> Float -> Buffer { pos : V3, norm : V3 }
 joySection l r t = 
@@ -77,9 +79,11 @@ joyScene view =
         toRot t = m4x4makeRotate t up
     in map (\t -> SceneNode (toRot t) [SceneLeaf joyBuf view]) ts
 
-joyModels : (Float,Float) -> M4x4 -> [Model]
-joyModels (roll, pitch) view  = 
-    let rollModel = m4x4makeRotate roll <| v3 1 0 0
-        pitchModel = m4x4makeRotate pitch <| v3 0 0 (-1)
-        rotate = m4x4mul rollModel pitchModel
-    in makeModels (SceneNode rotate (joyScene {view=view}) ) joyProg 
+joyModels : (Float,Float) -> M4x4 -> Plane -> [Model]
+joyModels (roll, pitch) view plane = 
+    let rollJoy = m4x4makeRotate roll <| v3 1 0 0
+        pitchJoy = m4x4makeRotate pitch <| v3 0 0 (-1)
+        rotate = m4x4mul rollJoy pitchJoy
+        localScene = SceneNode rotate <| joyScene {view=view}
+        absScene = joyBase plane localScene
+    in makeModels absScene joyProg 
