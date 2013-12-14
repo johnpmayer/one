@@ -4,7 +4,8 @@ import open MJS
 import open Touch
 import open Window
 
-import open Joystick
+import Joystick (joyModels)
+import Skybox (skyModel)
 
 relPos : (Int, Int) -> { a | x : Int, y : Int } -> (Float, Float)
 relPos (w, h) {x, y} = (toFloat x - (toFloat w / 2), (toFloat h / 2) - toFloat y)
@@ -49,11 +50,26 @@ fDimensions = mapPair toFloat <~ dimensions
 
 controls = (zipWithPair (/)) <~ realJoy ~ fDimensions
 
-aspect : Signal Float
-aspect = (/) <~ (fst <~ fDimensions) ~ (snd <~ fDimensions)
+sAspect : Signal Float
+sAspect = (/) <~ (fst <~ fDimensions) ~ (snd <~ fDimensions)
+
+eye : V3
+eye = v3 -1 1 0
+center : V3
+center = v3 0 0.4 0
+up : V3
+up = v3 0 1 0
+
+view : V3 -> V3 -> V3 -> Float -> M4x4
+view eye center up aspect = 
+    let proj = m4x4makePerspective 45 aspect 0.01 1000
+        look = m4x4makeLookAt eye center up
+    in m4x4mul proj look
+
+sView = view eye center up <~ sAspect
 
 scene : Signal [Model]
-scene = joyModels <~ controls ~ aspect
+scene = (::) <~ (skyModel <~ sView) ~ (joyModels <~ controls ~ sView)
 
 overlay : Signal [Form]
 overlay = combine <|

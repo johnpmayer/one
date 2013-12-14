@@ -60,21 +60,6 @@ void main() {
 
 joyProg = link joyVert joyFrag
 
-eye : V3
-eye = v3 -1 1 0
-
-center : V3
-center = v3 0 0.6 0
-
-up : V3
-up = v3 0 1 0
-
-view : V3 -> V3 -> Float -> { view : M4x4 }
-view eye center aspect = 
-    let proj = m4x4makePerspective 45 aspect 0.01 100
-        look = m4x4makeLookAt eye center up
-    in { view = m4x4mul proj look }
-
 n =16 
 l = 0.7
 r = 0.06
@@ -83,15 +68,18 @@ dt = 2 * pi / n
 joyBuf : Buffer { pos : V3, norm : V3 }
 joyBuf = joySection l r dt
 
+up : V3
+up = v3 0 1 0
+
 joyScene : { view : M4x4 } -> [Scene { pos : V3, norm : V3 } { view : M4x4 }]
 joyScene view =
     let ts = map (\i -> dt * i) [0..(n-1)]
         toRot t = m4x4makeRotate t up
     in map (\t -> SceneNode (toRot t) [SceneLeaf joyBuf view]) ts
 
-joyModels : (Float,Float) -> Float -> [Model]
-joyModels (roll, pitch) aspect = 
+joyModels : (Float,Float) -> M4x4 -> [Model]
+joyModels (roll, pitch) view  = 
     let rollModel = m4x4makeRotate roll <| v3 1 0 0
         pitchModel = m4x4makeRotate pitch <| v3 0 0 (-1)
         rotate = m4x4mul rollModel pitchModel
-    in makeModels (SceneNode rotate (joyScene <| view eye center aspect) ) joyProg 
+    in makeModels (SceneNode rotate (joyScene {view=view}) ) joyProg 
