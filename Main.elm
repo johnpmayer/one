@@ -7,6 +7,7 @@ import open Window
 import Joystick (joyModels)
 import Skybox (skyModel)
 import Simulation (Plane, initialPlane, simulate, planeView)
+import Terrain (terrModel)
 import open Utils
 
 relPos : (Int, Int) -> { a | x : Int, y : Int } -> (Float, Float)
@@ -66,7 +67,7 @@ up = v3 0 1 0
 sView = makeView <~ (planeView <~ plane) ~ fDimensions
 
 scene : Signal [Model]
-scene = (::) <~ (skyModel <~ sView) ~ (joyModels <~ controls ~ sView ~ plane)
+scene = (::) <~ (terrModel <~ sView) ~ ((::) <~ (skyModel <~ sView) ~ (joyModels <~ controls ~ sView ~ plane))
 
 overlay : Signal [Form]
 overlay = combine <|
