@@ -8,7 +8,7 @@ type Plane = { pos : V3, ahead : V3, up : V3, wing : V3 }
 
 initialPlane : Plane
 initialPlane = 
-    { pos = v3 0 -300 0
+    { pos = v3 0 10 0
     , ahead = v3 1 0 0
     , up = v3 0 1 0
     , wing = v3 0 0 1
