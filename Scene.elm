@@ -14,6 +14,6 @@ makeModels root prog =
         SceneLeaf buf u ->
             [encapsulate prog buf {u | model = model}]
         SceneNode trans childs -> 
-            let subModel = m4x4mul model trans
+            let subModel = mul model trans
             in concat <| map (walkScene subModel) childs
-    in walkScene m4x4identity root
+    in walkScene identity root

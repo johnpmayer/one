@@ -6,14 +6,14 @@ import open Graphics.WebGL
 
 worldSize = 500
 
-p0 = v3scale (v3  1  1  1) worldSize
-p1 = v3scale (v3 -1  1  1) worldSize
-p2 = v3scale (v3 -1 -1  1) worldSize
-p3 = v3scale (v3  1 -1  1) worldSize
-p4 = v3scale (v3  1 -1 -1) worldSize
-p5 = v3scale (v3  1  1 -1) worldSize
-p6 = v3scale (v3 -1  1 -1) worldSize
-p7 = v3scale (v3 -1 -1 -1) worldSize
+p0 = scale (v3  1  1  1) worldSize
+p1 = scale (v3 -1  1  1) worldSize
+p2 = scale (v3 -1 -1  1) worldSize
+p3 = scale (v3  1 -1  1) worldSize
+p4 = scale (v3  1 -1 -1) worldSize
+p5 = scale (v3  1  1 -1) worldSize
+p6 = scale (v3 -1  1 -1) worldSize
+p7 = scale (v3 -1 -1 -1) worldSize
 
 front  = [(p0,p1,p2),(p2,p3,p0)]
 back   = [(p5,p6,p7),(p7,p4,p5)]

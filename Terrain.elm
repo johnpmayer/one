@@ -17,7 +17,7 @@ rowPairTriangles (n',m') r1 r2 = case (r1,r2) of
             t2 = (v3 n b (m+1), v3 (n+1) d (m+1), v3 (n+1) c m)
             p t = 
                 let (u,v,w) = t
-                    norm = v3normalize <| v3cross (v3sub v u) (v3sub w u)
+                    norm = normalize <| cross (sub v u) (sub w u)
                 in mapTriangle (\v -> { pos = v, norm = norm }) t
         in p t1 :: p t2 :: rowPairTriangles (n', m' + 1) (b :: r1s) (d :: r2s)
     _ -> []
