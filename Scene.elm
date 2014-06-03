@@ -1,8 +1,8 @@
 
 module Scene where
 
-import open MJS
-import open Graphics.WebGL
+import MJS (..)
+import Graphics.WebGL (..)
 
 data Scene a b
     = SceneNode M4x4 [Scene a b]

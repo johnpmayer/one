@@ -1,12 +1,12 @@
 
 module Joystick where
 
-import open MJS
-import open Graphics.WebGL
+import MJS (..)
+import Graphics.WebGL (..)
 
-import open Scene
+import Scene (..)
 import Simulation (Plane, planeView, joyBase)
-import open Utils
+import Utils (..)
 
 joySection : Float -> Float -> Float -> Buffer { pos : V3, norm : V3 }
 joySection l r t = 

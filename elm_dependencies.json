@@ -1,0 +1,5 @@
+{ "dependencies":
+      { "johnpmayer/elm-linear-algebra": "1.0"
+      , "johnpmayer/elm-webgl": "0.1"
+      }
+}

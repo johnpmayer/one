@@ -1,14 +1,14 @@
 
-import open Graphics.WebGL
-import open MJS
-import open Touch
-import open Window
+import Graphics.WebGL (..)
+import Math.Vector3 (..)
+import Touch (..)
+import Window (..)
 
 import Joystick (joyModels)
 import Skybox (skyModel)
 import Simulation (Plane, initialPlane, simulate, planeView)
 import Terrain (terrModel)
-import open Utils
+import Utils (..)
 
 relPos : (Int, Int) -> { a | x : Int, y : Int } -> (Float, Float)
 relPos (w, h) {x, y} = (toFloat x - (toFloat w / 2), (toFloat h / 2) - toFloat y)
